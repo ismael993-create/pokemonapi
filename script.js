@@ -193,9 +193,7 @@ function renderResults(results, main) {
 }
 
 function searchPokemon() {
-  let input = document
-    .querySelector('[data-id="search-input"]')
-    .value.toLowerCase();
+  let input = document.querySelector('[data-id="search-input"]').value.toLowerCase();
   let main = document.querySelector('[data-id="content"]');
   let btn = document.querySelector('[data-id="load-more-button"]');
   btn.disabled = true;
@@ -221,9 +219,10 @@ function capitalize(str) {
 
 function showLoadingScreen() {
   document.querySelector('[data-id="loading-screen"]').style.display = "flex";
+  document.querySelector('[data-id="search-input"]').disabled = true;
 }
 
 function hideLoadingScreen() {
     document.querySelector('[data-id="loading-screen"]').style.display = "none";
-  
+    document.querySelector('[data-id="search-input"]').disabled = false;
 }
