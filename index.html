@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,29 +9,51 @@
     <link rel="icon" type="image/png" href="./img/pokeball.png?v=2">
     <script src="./script.js" defer></script>
 </head>
-<body onload="init()">
 
-  
+<body onload="init()">
+    <svg style="display:none;">
+        <symbol id="chevron-left"><path d="M169.4 297.4C156.9 309.9 156.9 330.2 169.4 342.7L361.4 534.7C373.9 547.2 394.2 547.2 406.7 534.7C419.2 522.2 419.2 501.9 406.7 489.4L237.3 320L406.6 150.6C419.1 138.1 419.1 117.8 406.6 105.3C394.1 92.8 373.8 92.8 361.3 105.3L169.3 297.3z"/></symbol>
+    </svg>
+    <svg style="display:none;">
+        <symbol id="chevron-right"><path d="M471.1 297.4C483.6 309.9 483.6 330.2 471.1 342.7L279.1 534.7C266.6 547.2 246.3 547.2 233.8 534.7C221.3 522.2 221.3 501.9 233.8 489.4L403.2 320L233.9 150.6C221.4 138.1 221.4 117.8 233.9 105.3C246.4 92.8 266.7 92.8 279.2 105.3L471.2 297.3z"/></symbol>
+    </svg>
+
     <header>
         <div class="logo">
             <img src="./img/pokeball.png" alt="Logo" width="30px">
             <h1>Pokédex</h1>
         </div>
         <div class="search_container">
-            <input data-id="search-input" type="text" placeholder="Search Pokémon...">
-            <button data-id="search-button" onclick="searchPokemon()">Search</button>
+            <input oninput="searchPokemon()" data-id="search-input" type="text" placeholder="Search Pokémon...">
+            <p data-id="search-error" class="minimum_letters_error"></p>
         </div>
     </header>
 
-  
-    <main id="content">
+    <div class="loading_screen_overlay" data-id="loading-screen">
+        
+            <img src="./img/simple_pokeball.gif" alt="Pokeball Loading" class="loading_gif">
+    </div>
+
+
+
+    <main data-id="content">
     </main>
 
-    
+
     <div class="load_more_container">
         <button data-id="load-more-button" onclick="loadMore()">Load More</button>
     </div>
 
-    
+    <dialog class="dialog" data-id="dialog">
+        <div data-id="overlay-pokemon-name">
+            <button data-id="close-dialog-button" onclick="closeDialog()">✕</button>
+            <button data-id="prev-button" onclick="prevPokemon()">❮</button>
+            <button data-id="next-button" onclick="nextPokemon()">❯</button>
+            <img data-id="dialog-image" src="" alt="Pokemon">
+        </div>
+    </dialog>
+
 </body>
+
 </html>
+
