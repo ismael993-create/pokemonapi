@@ -31,7 +31,6 @@ const typeColors = {
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
   await loadPokemons();
-  hideLoadingScreen();
 }
 
 // ── Pokemon laden ─────────────────────────────────────────────
@@ -54,8 +53,9 @@ async function loadPokemons() {
   currentOffset += LOAD_COUNT;
   btn.disabled = false;
   btn.innerText = "Load More";
+  hideLoadingScreen();
 }
-hideLoadingScreen();
+
 
 // ── Einzelnes Pokemon von API holen ──────────────────────────
 async function fetchPokemon(id) {
@@ -224,7 +224,6 @@ function showLoadingScreen() {
 }
 
 function hideLoadingScreen() {
-  
     document.querySelector('[data-id="loading-screen"]').style.display = "none";
   
 }
