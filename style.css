@@ -31,6 +31,15 @@ header {
     gap: 10px;
 }
 
+.dialog_stat {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    font-family: monospace;
+    padding: 5px 0;
+}
+
+
 .search_container {
     display: flex;
     gap: 8px;
@@ -170,7 +179,7 @@ dialog {
     background: #16213e;
     color: white;
     padding: 32px;
-    max-width: 400px;
+    max-width: 450px;
     width: 90%;
     position: fixed;
     top: 50%;
