@@ -31,10 +31,7 @@ const typeColors = {
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
   await loadPokemons();
-}
-
-
-
+    }
 
 // ── Einzelnes Pokemon von API holen ──────────────────────────
 async function fetchPokemon(id) {
@@ -42,8 +39,41 @@ async function fetchPokemon(id) {
   return await response.json();
 }
 
+async function fetchPokemontype(url) {
+  let response = await fetch(url);
+  return await response.json();
+}
+
+// ── Pokemon laden ─────────────────────────────────────────────
+
+async function fetchPokemonWithTypes(i) {
+  let data = await fetchPokemon(i + 1);
+  let typePromises = data.types.map(async (t) => {
+    let typeData = await fetchPokemontype(t.type.url);
+    return typeData.sprites["generation-viii"]["sword-shield"].symbol_icon;
+  });
+  data.typeIconUrl = await Promise.all(typePromises);
+  return data;
+}
 
 
+
+
+async function loadPokemons() {
+  let btn = document.querySelector('[data-id="load-more-button"]');
+  btn.disabled = true;
+  btn.innerText = "Loading...";
+  showLoadingScreen();
+
+  for (let i = currentOffset; i < currentOffset + LOAD_COUNT; i++) {
+    if (!allPokemons[i]) {
+      allPokemons[i] = await fetchPokemonWithTypes(i);}
+    renderCard(allPokemons[i], i);}
+  currentOffset += LOAD_COUNT;
+  btn.disabled = false;
+  btn.innerText = "Load More";
+  hideLoadingScreen();
+} 
 
 
 function showError(input) {
@@ -95,8 +125,7 @@ async function loadMore() {
 
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
+    }
 
 function showLoadingScreen() {
   document.querySelector('[data-id="loading-screen"]').style.display = "flex";
@@ -104,6 +133,6 @@ function showLoadingScreen() {
 }
 
 function hideLoadingScreen() {
-    document.querySelector('[data-id="loading-screen"]').style.display = "none";
-    document.querySelector('[data-id="search-input"]').disabled = false;
+  document.querySelector('[data-id="loading-screen"]').style.display = "none";
+  document.querySelector('[data-id="search-input"]').disabled = false;
 }

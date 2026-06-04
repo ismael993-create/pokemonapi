@@ -13,13 +13,12 @@ function openDialog(index) {
             <img data-id="dialog-image" 
                  src="${pokemon.sprites.other["official-artwork"].front_default}" 
                  alt="${pokemon.name}" width="200px">
-                  <div class="card_types">
-                ${pokemon.types
-                  .map(
-                    (t) => `
-                    <span class="type_badge">${t.type.name}</span>`,
-                  )
-                  .join("")}
+            <div class="card_types">
+                <img src="${pokemon.typeIconUrl[0]}" alt="${pokemon.name} Type" width="30px">
+                ${pokemon.typeIconUrl[1] ? `<img src="${pokemon.typeIconUrl[1]}" alt="${pokemon.name} Type" width="30px">` : ""}
+                 
+               
+                  
             </div>
             <p class="dialog_stat"><span>HP:</span> <span>${pokemon.stats[0].base_stat}</span></p>
             <p class="dialog_stat"><span>Attack:</span> <span>${pokemon.stats[1].base_stat}</span></p>
@@ -65,3 +64,6 @@ function nextPokemon() {
 function prevPokemon() {
   if (currentIndex > 0) openDialog(currentIndex - 1);
 }
+
+
+

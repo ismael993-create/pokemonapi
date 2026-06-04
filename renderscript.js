@@ -15,38 +15,14 @@ function renderContentpokemon(main, pokemon, color, index) {
                      alt="${pokemon.name}">
             </div>
             <div class="card_types">
-                ${pokemon.types
-                  .map(
-                    (t) => `
-                    <span class="type_badge">${t.type.name}</span>`,
-                  )
-                  .join("")}
+               <img src="${pokemon.typeIconUrl[0]}" alt="${pokemon.name} Type" width="30px">
+                ${pokemon.typeIconUrl[1] ? `<img src="${pokemon.typeIconUrl[1]}" alt="${pokemon.name} Type" width="30px">` : ""}
+                 
             </div>
         </button>`;
 }
 
-// ── Pokemon laden ─────────────────────────────────────────────
-async function loadPokemons() {
-  let btn = document.querySelector('[data-id="load-more-button"]');
-  btn.disabled = true;
-  btn.innerText = "Loading...";
-  showLoadingScreen();
 
-  for (let i = currentOffset; i < currentOffset + LOAD_COUNT; i++) {
-    if (!allPokemons[i]) {
-      let data = await fetchPokemon(i + 1);
-      allPokemons[i] = data;
-    }
-    
-    renderCard(allPokemons[i], i);
-  }
-  
-
-  currentOffset += LOAD_COUNT;
-  btn.disabled = false;
-  btn.innerText = "Load More";
-  hideLoadingScreen();
-}
 
 // ── Karte rendern ─────────────────────────────────────────────
 function renderCard(pokemon, index) {
