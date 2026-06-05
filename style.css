@@ -234,6 +234,7 @@ dialog::backdrop {
     justify-content: center;
     align-items: center;
     z-index: 1;
+    height: 100vh;
 }
 
 .dialog_control_buttons {
