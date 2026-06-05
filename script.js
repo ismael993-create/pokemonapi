@@ -6,6 +6,7 @@ let currentIndex = 0; // welches Pokemon ist gerade im Dialog offen
 let contentRendered = false; // ob der Inhalt bereits gerendert wurde
 const LOAD_COUNT = 20; // wie viele auf einmal laden
 
+
 // Typ-Farben
 const typeColors = {
   fire: "#e63946",

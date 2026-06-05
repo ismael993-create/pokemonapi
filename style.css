@@ -37,6 +37,7 @@ header {
     font-size: 20px;
     font-family: monospace;
     padding: 5px 0;
+    width: 100%;
 }
 
 
@@ -176,7 +177,7 @@ main {
 dialog {
     border: none;
     border-radius: 16px;
-    background: #16213e;
+    background: #19191a;;
     color: white;
     padding: 32px;
     max-width: 450px;
@@ -233,9 +234,49 @@ dialog::backdrop {
     z-index: 1;
 }
 
+.dialog_control_buttons {
+    width: 100%;
+    display: flex;
+      gap: 10px;
+}
+
+.dialog_control_buttons button {
+    flex: 1;
+    padding: 12px 0;
+    border-radius: 20px;
+    border: none;
+    background-color: #5d4e4f;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    width: 50%;
+  
+}
+
+.dialog_control_buttons button:hover {
+    background-color: #3e3334;
+    transform: scale(1.05);
+}
+
+.dialog_content {
+    padding: 15px 0;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.evolution-pokemon {
+    object-fit: contain;
+    vertical-align: middle;
+    min-width: 30px;
+    max-width: 60px;
+    flex: 1;
+}
 
 
-/* RESPONSIVE */
+
 @media (max-width: 320px) {
     .pokemon_card {
         width: 140px;

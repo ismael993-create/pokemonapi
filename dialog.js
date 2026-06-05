@@ -5,24 +5,28 @@ function openDialog(index) {
   let color = typeColors[pokemon.types[0].type.name] || "#333";
 
   renderDialogContent(pokemon, color);
-  
+
   let dialog = document.querySelector('[data-id="dialog"]');
   dialog.showModal();
   dialog.addEventListener("click", closeOnBackdrop);
   document.body.style.overflow = "hidden";
 }
 
-function renderDialogContent(pokemon, color) {
+
+function renderDialogContent(pokemon, color) {     
   let html = `
     <button class="dialog_closebutton" data-id="close-dialog-button" onclick="closeDialog()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="rgb(255, 255, 255)" d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/></svg></button>
     <div style="background:${color}; border-radius:12px; padding:20px; text-align:center;">
         <h2>${capitalize(pokemon.name)}</h2>
         <img data-id="dialog-image" src="${pokemon.sprites.other["official-artwork"].front_default}" alt="${pokemon.name}" width="200px">
         <div class="card_types">${renderTypeIcons(pokemon)}</div>
-        <p class="dialog_stat"><span>HP:</span> <span>${pokemon.stats[0].base_stat}</span></p>
-        <p class="dialog_stat"><span>Attack:</span> <span>${pokemon.stats[1].base_stat}</span></p>
-        <p class="dialog_stat"><span>Defense:</span> <span>${pokemon.stats[2].base_stat}</span></p>
-        <p class="dialog_stat"><span>Speed:</span> <span>${pokemon.stats[5].base_stat}</span></p>
+        <div class="dialog_control_buttons">
+            <button onclick='renderStats(${JSON.stringify(pokemon)})'>Stats</button>
+            <button onclick='renderEvolutions(${JSON.stringify(pokemon)})'>Evolutions</button>
+        </div>
+        <div id="dialog_content" class="dialog_content">
+            ${createStatshtml(pokemon)}
+        </div>
     </div>
     <div class="dialog_nav">
         <button class="dialog_nav_button" style="background:${color};" data-id="prev-button" onclick="prevPokemon()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><use href="#chevron-left"></use></svg></button>
@@ -31,9 +35,77 @@ function renderDialogContent(pokemon, color) {
   document.querySelector('[data-id="overlay-pokemon-name"]').innerHTML = html;
 }
 
+
+function createStatshtml(pokemon) {
+    return `    
+    <p class="dialog_stat"><span>HP:</span> <span>${pokemon.stats[0].base_stat}</span></p>
+    <p class="dialog_stat"><span>Attack:</span> <span>${pokemon.stats[1].base_stat}</span></p>
+    <p class="dialog_stat"><span>Defense:</span> <span>${pokemon.stats[2].base_stat}</span></p>
+    <p class="dialog_stat"><span>Speed:</span> <span>${pokemon.stats[5].base_stat}</span></p>
+  `;
+}
+
+
+
+function renderStats(pokemon) {
+    let content = document.querySelector('#dialog_content');
+    content.innerHTML = "";
+    content.innerHTML = createStatshtml(pokemon);
+}
+
+
+async function renderEvolutions(pokemon) {
+    let chainUrl = await getEvolutionChainUrl(pokemon.species.url);
+    let response = await fetch(chainUrl);
+    let chainData = await response.json();
+
+    let evolutionPokemons = await fetchEvolutionChainData(chainData.chain);
+
+    let content = document.querySelector('#dialog_content');
+    content.innerHTML = createEvolutionsHtml(evolutionPokemons);
+}
+
+
+async function getEvolutionChainUrl(speciesUrl) {
+    let response = await fetch(speciesUrl);
+    let speciesData = await response.json();
+    return speciesData.evolution_chain.url;
+}
+
+
+async function fetchEvolutionChainData(currentStep) {
+    let pokemons = [];
+    while (currentStep) {
+        let pokemonUrl = currentStep.species.url.replace("pokemon-species", "pokemon");
+        let response = await fetch(pokemonUrl);
+        pokemons.push(await response.json());
+
+        currentStep = currentStep.evolves_to?.[0] || null;
+    }
+    return pokemons;
+}
+
+
+
+
+function createEvolutionsHtml(evolutionPokemons) {
+    return evolutionPokemons.map((pokemon, index) => {
+        let showArrow = index < evolutionPokemons.length - 1;
+        return `
+            <img class="evolution-pokemon" src="${pokemon.sprites.other["official-artwork"].front_default}" alt="${pokemon.name}">
+            ${showArrow ? '<span style="width: 24px; height: 24px; display: inline-block; fill: white;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><use href="#chevron-right"></use></svg></span>' : ''}
+        `;
+    }).join('');
+}
+
+
+
+
 function renderTypeIcons(pokemon) {
   let firstIcon = `<img src="${pokemon.typeIconUrl[0]}" alt="${pokemon.name} Type" width="30px">`;
-  let secondIcon = pokemon.typeIconUrl[1] ? `<img src="${pokemon.typeIconUrl[1]}" alt="${pokemon.name} Type" width="30px">` : "";
+  let secondIcon = pokemon.typeIconUrl[1]
+    ? `<img src="${pokemon.typeIconUrl[1]}" alt="${pokemon.name} Type" width="30px">`
+    : "";
   return firstIcon + secondIcon;
 }
 
@@ -57,6 +129,3 @@ function nextPokemon() {
 function prevPokemon() {
   if (currentIndex > 0) openDialog(currentIndex - 1);
 }
-
-
-
