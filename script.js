@@ -18,21 +18,23 @@ const typeColors = {
   dragon: "#6d6875",
   dark: "#343a40",
   fairy: "#f4acb7",
-  normal: "#adb5bd",
+  normal: "#6b7279",
   fighting: "#d62828",
   poison: "#7b2d8b",
   ground: "#d4a373",
-  flying: "#90e0ef",
+  flying: "#3d5a80",
   bug: "#606c38",
   rock: "#6c757d",
   ghost: "#4a4e69",
   steel: "#dee2e6",
 };
 
+
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
   await loadPokemons();
     }
+
 
 // ── Einzelnes Pokemon von API holen ──────────────────────────
 async function fetchPokemon(id) {
@@ -40,10 +42,12 @@ async function fetchPokemon(id) {
   return await response.json();
 }
 
+
 async function fetchPokemontype(url) {
   let response = await fetch(url);
   return await response.json();
 }
+
 
 // ── Pokemon laden ─────────────────────────────────────────────
 
@@ -56,8 +60,6 @@ async function fetchPokemonWithTypes(i) {
   data.typeIconUrl = await Promise.all(typePromises);
   return data;
 }
-
-
 
 
 async function loadPokemons() {
@@ -82,27 +84,34 @@ function showError(input) {
   err.textContent = input.length === 0 ? "" : "min. 3 Buchstaben eingeben";
 }
 
+
 function handleShortInput(input, main, btn) {
   showError(input);
   renderAftersearch(main);
   btn.disabled = false;
 }
 
+
 function renderAftersearch(main) {
   if (contentRendered) return;
-  main.innerHTML = "";
+  document.querySelector('[data-id="pokemon-list"]').innerHTML = "";
   allPokemons.forEach((p, i) => renderCard(p, i));
   contentRendered = true;
 }
 
+
 function renderResults(results, main) {
-  main.innerHTML = "";
+  let list = document.querySelector('[data-id="pokemon-list"]');
+  list.innerHTML = "";
   if (results.length === 0) {
-    main.innerHTML = `<p data-id="not-found" class="not_found">Sorry, no Pokémon found! 😢</p>`;
+    list.innerHTML = `<p data-id="not-found" class="not_found">Sorry, no Pokémon found! 😢</p>`;
     return;
   }
-  results.forEach((p) => renderCard(p, allPokemons.indexOf(p)));
+  results.forEach(p => {
+    list.innerHTML += `<li>${renderContentpokemon(p, typeColors[p.types[0].type.name] || "#333", allPokemons.indexOf(p))}</li>`;
+  });
 }
+
 
 function searchPokemon() {
   let input = document.querySelector('[data-id="search-input"]').value.toLowerCase();
@@ -119,19 +128,23 @@ function searchPokemon() {
   renderResults(results, main);
 }
 
+
 async function loadMore() {
   await loadPokemons();
   await hideLoadingScreen();
 }
 
+
 function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
     }
+
 
 function showLoadingScreen() {
   document.querySelector('[data-id="loading-screen"]').style.display = "flex";
   document.querySelector('[data-id="search-input"]').disabled = true;
 }
+
 
 function hideLoadingScreen() {
   document.querySelector('[data-id="loading-screen"]').style.display = "none";

@@ -8,8 +8,20 @@
 body {
       background-color: rgb(24, 27, 29);
     color: white;
-    min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+.content-height {
+    flex: 1;
+}   
+
+span {
+   font-size: 20px;
+    font-weight: bold;
+}
+
 
 /* HEADER */
 header {
@@ -21,6 +33,16 @@ header {
     position: sticky;
     top: 0;
     z-index: 2;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.max-width-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
     gap: 15px;
 }
@@ -85,15 +107,10 @@ header {
 
 /* MAIN GRID */
 main {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
     padding: 32px;
     max-width: 1440px;
     margin: 0 auto;
-    justify-content: center;
 }
-
 /* POKEMON KARTE */
 .pokemon_card {
     width: 180px;
@@ -214,6 +231,25 @@ dialog {
     margin-bottom: 25px;
 }
 
+.button_disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: grey;
+}
+
+ul {
+    list-style: none;  
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    width: 100%;
+}
+
+li {
+    display: flex;  
+}
+
 
 dialog::backdrop {
     background: rgba(0, 0, 0, 0.7);
@@ -278,6 +314,15 @@ dialog::backdrop {
     flex: 1;
 }
 
+
+.footer {
+    text-align: center;
+    padding: 40px;
+    background-color: rgb(35 38 40);
+    color: white;
+    margin-top: 32px;
+    height: 150px;
+}
 
 
 @media (max-width: 320px) {

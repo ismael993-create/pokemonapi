@@ -1,6 +1,6 @@
 // ── Rendern ───────────────────────────────────────────────────
 
-function renderContentpokemon(main, pokemon, color, index) {
+function renderContentpokemon(pokemon, color, index) {
   return `
         <button data-id="card" class="pokemon_card" 
                 style="background-color: ${color}"
@@ -17,20 +17,16 @@ function renderContentpokemon(main, pokemon, color, index) {
             <div class="card_types">
                <img src="${pokemon.typeIconUrl[0]}" alt="${pokemon.name} Type" width="30px">
                 ${pokemon.typeIconUrl[1] ? `<img src="${pokemon.typeIconUrl[1]}" alt="${pokemon.name} Type" width="30px">` : ""}
-                 
             </div>
         </button>`;
 }
 
 
-
 // ── Karte rendern ─────────────────────────────────────────────
 function renderCard(pokemon, index) {
-  let main = document.querySelector('[data-id="content"]');
+  let list = document.querySelector('[data-id="pokemon-list"]');
   let type = pokemon.types[0].type.name;
   let color = typeColors[type] || "#333";
-
-  main.innerHTML += renderContentpokemon(main, pokemon, color, index);
+  list.innerHTML += `<li>${renderContentpokemon(pokemon, color, index)}</li>`;
 }
-
 

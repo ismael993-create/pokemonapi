@@ -5,7 +5,19 @@ function openDialog(index) {
   let color = typeColors[pokemon.types[0].type.name] || "#333";
 
   renderDialogContent(pokemon, color);
+  updatePrevButton(index);
+  displayDialog();
+}
 
+
+function updatePrevButton(index) {
+  let prevBtn = document.querySelector('[data-id="prev-button"]');
+  prevBtn.disabled = index === 0;
+  prevBtn.classList.toggle("button_disabled", index === 0);
+}
+
+
+function displayDialog() {
   let dialog = document.querySelector('[data-id="dialog"]');
   dialog.showModal();
   dialog.addEventListener("click", closeOnBackdrop);
@@ -44,7 +56,6 @@ function createStatshtml(pokemon) {
     <p class="dialog_stat"><span>Speed:</span> <span>${pokemon.stats[5].base_stat}</span></p>
   `;
 }
-
 
 
 function renderStats(pokemon) {
@@ -86,8 +97,6 @@ async function fetchEvolutionChainData(currentStep) {
 }
 
 
-
-
 function createEvolutionsHtml(evolutionPokemons) {
     return evolutionPokemons.map((pokemon, index) => {
         let showArrow = index < evolutionPokemons.length - 1;
@@ -99,8 +108,6 @@ function createEvolutionsHtml(evolutionPokemons) {
 }
 
 
-
-
 function renderTypeIcons(pokemon) {
   let firstIcon = `<img src="${pokemon.typeIconUrl[0]}" alt="${pokemon.name} Type" width="30px">`;
   let secondIcon = pokemon.typeIconUrl[1]
@@ -109,6 +116,7 @@ function renderTypeIcons(pokemon) {
   return firstIcon + secondIcon;
 }
 
+
 // ── Dialog schließen ──────────────────────────────────────────
 function closeDialog() {
   let dialog = document.querySelector('[data-id="dialog"]');
@@ -116,15 +124,18 @@ function closeDialog() {
   document.body.style.overflow = "";
 }
 
+
 function closeOnBackdrop(e) {
   let dialog = document.querySelector('[data-id="dialog"]');
   if (e.target === dialog) closeDialog();
 }
 
+
 // ── Navigation im Dialog ──────────────────────────────────────
 function nextPokemon() {
   if (currentIndex < allPokemons.length - 1) openDialog(currentIndex + 1);
 }
+
 
 function prevPokemon() {
   if (currentIndex > 0) openDialog(currentIndex - 1);
