@@ -1,8 +1,11 @@
 // ── Variablen ─────────────────────────────────────────────────
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 let allPokemons = []; // alle geladenen Pokemon gespeichert (Cache)
+let allPokemonNames = []; // alle Pokemon-Namen für die Suche
+let currentSearchResults = []; // aktuelle Suchergebnisse
 let currentOffset = 0; // wo fangen wir beim Laden an
 let currentIndex = 0; // welches Pokemon ist gerade im Dialog offen
+let loadedCount = 0; // maximale Anzahl der tatsächlich geladenen Pokemon
 let contentRendered = false; // ob der Inhalt bereits gerendert wurde
 const LOAD_COUNT = 20; // wie viele auf einmal laden
 
@@ -32,8 +35,15 @@ const typeColors = {
 
 // ── Init ──────────────────────────────────────────────────────
 async function init() {
+  await loadAllPokemonNames();
   await loadPokemons();
-    }
+}
+
+async function loadAllPokemonNames() {
+  let response = await fetch(`${BASE_URL}?limit=100000`);
+  let data = await response.json();
+  allPokemonNames = data.results.map((pokemon) => pokemon.name);
+}
 
 
 // ── Einzelnes Pokemon von API holen ──────────────────────────
@@ -48,11 +58,19 @@ async function fetchPokemontype(url) {
   return await response.json();
 }
 
+function getGermanNameFromSpecies(speciesData) {
+  let germanEntry = speciesData.names.find((nameEntry) => nameEntry.language.name === "de");
+  return germanEntry ? germanEntry.name : null;
+}
 
 // ── Pokemon laden ─────────────────────────────────────────────
 
-async function fetchPokemonWithTypes(i) {
-  let data = await fetchPokemon(i + 1);
+async function fetchPokemonWithTypes(iOrName) {
+  let data = await fetchPokemon(iOrName);
+  let speciesResponse = await fetch(data.species.url);
+  let speciesData = await speciesResponse.json();
+  data.displayName = getGermanNameFromSpecies(speciesData) || capitalize(data.name);
+
   let typePromises = data.types.map(async (t) => {
     let typeData = await fetchPokemontype(t.type.url);
     return typeData.sprites["generation-viii"]["sword-shield"].symbol_icon;
@@ -70,13 +88,17 @@ async function loadPokemons() {
 
   for (let i = currentOffset; i < currentOffset + LOAD_COUNT; i++) {
     if (!allPokemons[i]) {
-      allPokemons[i] = await fetchPokemonWithTypes(i);}
-    renderCard(allPokemons[i], i);}
+      allPokemons[i] = await fetchPokemonWithTypes(i + 1);
+    }
+    renderCard(allPokemons[i], i);
+  }
+
   currentOffset += LOAD_COUNT;
+  loadedCount = currentOffset;
   btn.disabled = false;
   btn.innerText = "Load More";
   hideLoadingScreen();
-} 
+}
 
 
 function showError(input) {
@@ -87,16 +109,26 @@ function showError(input) {
 
 function handleShortInput(input, main, btn) {
   showError(input);
-  renderAftersearch(main);
+  currentSearchResults = [];
+  renderLoadedPokemons();
   btn.disabled = false;
 }
 
 
-function renderAftersearch(main) {
-  if (contentRendered) return;
-  document.querySelector('[data-id="pokemon-list"]').innerHTML = "";
-  allPokemons.forEach((p, i) => renderCard(p, i));
+function renderLoadedPokemons() {
+  let list = document.querySelector('[data-id="pokemon-list"]');
+  list.innerHTML = "";
+  for (let i = 0; i < loadedCount; i++) {
+    if (allPokemons[i]) {
+      renderCard(allPokemons[i], i);
+    }
+  }
   contentRendered = true;
+}
+
+
+function renderAftersearch(main) {
+  renderLoadedPokemons();
 }
 
 
@@ -113,19 +145,54 @@ function renderResults(results, main) {
 }
 
 
-function searchPokemon() {
+async function searchPokemon() {
   let input = document.querySelector('[data-id="search-input"]').value.toLowerCase();
   let main = document.querySelector('[data-id="content"]');
   let btn = document.querySelector('[data-id="load-more-button"]');
   btn.disabled = true;
+
   if (input.length < 3) {
     handleShortInput(input, main, btn);
     return;
   }
+
   document.querySelector('[data-id="search-error"]').textContent = "";
   contentRendered = false;
-  let results = allPokemons.filter((p) => p && p.name.includes(input));
+
+  let loadedResults = allPokemons.filter(
+    (p) =>
+      p &&
+      (p.name.toLowerCase().includes(input) || p.displayName?.toLowerCase().includes(input))
+  );
+
+  let missingNames = allPokemonNames
+    .filter((name) => name.includes(input))
+    .filter((name) => !loadedResults.some((p) => p.name === name))
+    .slice(0, 10);
+
+  let missingResults = await Promise.all(
+    missingNames.map(async (name) => {
+      try {
+        return await fetchPokemonWithTypes(name);
+      } catch (error) {
+        return null;
+      }
+    })
+  );
+
+  missingResults
+    .filter(Boolean)
+    .forEach((pokemon) => {
+      let index = pokemon.id - 1;
+      if (!allPokemons[index]) {
+        allPokemons[index] = pokemon;
+      }
+    });
+
+  let results = [...loadedResults, ...missingResults.filter(Boolean)];
+  currentSearchResults = results;
   renderResults(results, main);
+  btn.disabled = false;
 }
 
 

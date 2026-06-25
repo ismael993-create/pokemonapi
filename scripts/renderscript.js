@@ -7,12 +7,12 @@ function renderContentpokemon(pokemon, color, index) {
                 onclick="openDialog(${index})">
             <div class="card_header">
                 <span>#${pokemon.id}</span>
-                <span>${capitalize(pokemon.name)}</span>
+                <span>${capitalize(pokemon.displayName || pokemon.name)}</span>
             </div>
             <div class="card_img">
                 <img data-id="card-image" 
                      src="${pokemon.sprites.other["official-artwork"].front_default}" 
-                     alt="${pokemon.name}">
+                     alt="${pokemon.displayName || pokemon.name}">
             </div>
             <div class="card_types">
                <img src="${pokemon.typeIconUrl[0]}" alt="${pokemon.name} Type" width="30px">

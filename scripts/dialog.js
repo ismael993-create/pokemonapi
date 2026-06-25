@@ -5,15 +5,22 @@ function openDialog(index) {
   let color = typeColors[pokemon.types[0].type.name] || "#333";
 
   renderDialogContent(pokemon, color);
-  updatePrevButton(index);
+  updateNavigationButtons(index);
   displayDialog();
 }
 
 
-function updatePrevButton(index) {
+function updateNavigationButtons(index) {
   let prevBtn = document.querySelector('[data-id="prev-button"]');
+  let nextBtn = document.querySelector('[data-id="next-button"]');
+  
+  let maxIndex = currentSearchResults.length > 0 ? currentSearchResults.length : loadedCount;
+  
   prevBtn.disabled = index === 0;
   prevBtn.classList.toggle("button_disabled", index === 0);
+  
+  nextBtn.disabled = index >= maxIndex - 1;
+  nextBtn.classList.toggle("button_disabled", index >= maxIndex - 1);
 }
 
 
@@ -29,8 +36,8 @@ function renderDialogContent(pokemon, color) {
   let html = `
     <button class="dialog_closebutton" data-id="close-dialog-button" onclick="closeDialog()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path fill="rgb(255, 255, 255)" d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/></svg></button>
     <div style="background:${color}; border-radius:12px; padding:20px; text-align:center;">
-        <h2>${capitalize(pokemon.name)}</h2>
-        <img data-id="dialog-image" src="${pokemon.sprites.other["official-artwork"].front_default}" alt="${pokemon.name}" width="200px">
+        <h2>${capitalize(pokemon.displayName || pokemon.name)}</h2>
+        <img data-id="dialog-image" src="${pokemon.sprites.other["official-artwork"].front_default}" alt="${pokemon.displayName || pokemon.name}" width="200px">
         <div class="card_types">${renderTypeIcons(pokemon)}</div>
         <div class="dialog_control_buttons">
             <button onclick='renderStats(${JSON.stringify(pokemon)})'>Stats</button>
@@ -133,7 +140,8 @@ function closeOnBackdrop(e) {
 
 // ── Navigation im Dialog ──────────────────────────────────────
 function nextPokemon() {
-  if (currentIndex < allPokemons.length - 1) openDialog(currentIndex + 1);
+  let maxIndex = currentSearchResults.length > 0 ? currentSearchResults.length : loadedCount;
+  if (currentIndex < maxIndex - 1) openDialog(currentIndex + 1);
 }
 
 
