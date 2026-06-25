@@ -35,7 +35,7 @@
                     <h1>Pokédex</h1>
                 </div>
                 <div class="search_container">
-                    <input oninput="searchPokemon()" data-id="search-input" type="text" placeholder="Search Pokémon...">
+                    <input oninput="searchPokemon()" onkeyup="searchPokemon()" onchange="searchPokemon()" data-id="search-input" type="text" placeholder="Search Pokémon...">
                     <p data-id="search-error" class="minimum_letters_error"></p>
                 </div>
             </div>

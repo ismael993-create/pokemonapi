@@ -2,6 +2,7 @@
 const BASE_URL = "https://pokeapi.co/api/v2/pokemon/";
 let allPokemons = []; // alle geladenen Pokemon gespeichert (Cache)
 let allPokemonNames = []; // alle Pokemon-Namen für die Suche
+let allPokemonNamesLower = []; // Namensliste in Kleinbuchstaben
 let currentSearchResults = []; // aktuelle Suchergebnisse
 let currentOffset = 0; // wo fangen wir beim Laden an
 let currentIndex = 0; // welches Pokemon ist gerade im Dialog offen
@@ -43,6 +44,7 @@ async function loadAllPokemonNames() {
   let response = await fetch(`${BASE_URL}?limit=100000`);
   let data = await response.json();
   allPokemonNames = data.results.map((pokemon) => pokemon.name);
+  allPokemonNamesLower = allPokemonNames.map((name) => name.toLowerCase());
 }
 
 
@@ -146,7 +148,7 @@ function renderResults(results, main) {
 
 
 async function searchPokemon() {
-  let input = document.querySelector('[data-id="search-input"]').value.toLowerCase();
+  let input = document.querySelector('[data-id="search-input"]').value.toLowerCase().trim();
   let main = document.querySelector('[data-id="content"]');
   let btn = document.querySelector('[data-id="load-more-button"]');
   btn.disabled = true;
@@ -166,12 +168,12 @@ async function searchPokemon() {
   );
 
   let missingNames = allPokemonNames
-    .filter((name) => name.includes(input))
+    .filter((name) => name.toLowerCase().includes(input))
     .filter((name) => !loadedResults.some((p) => p.name === name))
     .slice(0, 10);
 
   let missingResults = await Promise.all(
-    missingNames.map(async (name) => {
+    missingNames.map(async (name, index) => {
       try {
         return await fetchPokemonWithTypes(name);
       } catch (error) {
